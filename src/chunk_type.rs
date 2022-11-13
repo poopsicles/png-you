@@ -1,7 +1,7 @@
 use crate::events::Error;
 use std::{str::FromStr, fmt::Display};
 
-#[derive(Debug, Eq)]
+#[derive(Debug, Eq, Clone)]
 pub struct ChunkType {
     type_code: [u8; 4],
 }

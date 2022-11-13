@@ -13,5 +13,11 @@ pub enum Error {
     #[error("chunk length data and actual length mismatch")]
     ChunkLengthMismatch,
     #[error("chunk checksum data invalid")]
-    ChunkInvalidChecksum
+    InvalidChunkChecksum,
+    #[error("invalid signature at beginning of file")]
+    InvalidMagicNumber,
+    #[error("chunk not found in image")]
+    ChunkNotFound,
+    #[error("image has incomplete data")]
+    NotEnoughData
 }

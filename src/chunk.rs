@@ -6,7 +6,8 @@ use crate::events::Error;
 
 use crc::*;
 
-struct Chunk {
+#[derive(Clone)]
+pub struct Chunk {
     length: u32,
     chunk_type: ChunkType,
     data: Vec<u8>,
@@ -49,7 +50,7 @@ impl TryFrom<&[u8]> for Chunk {
         let preceding = chunk_type.bytes().iter().chain(data.iter()).copied().collect::<Vec<_>>();
 
         if crc != Crc::<u32>::new(&CRC_32_ISO_HDLC).checksum(&preceding) {
-            return Err(Error::ChunkInvalidChecksum);
+            return Err(Error::InvalidChunkChecksum);
         }
 
         Ok(Chunk {
@@ -72,7 +73,7 @@ impl Display for Chunk {
 }
 
 impl Chunk {
-    fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
+    pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
         let length = data.len() as u32;
         let preceding = chunk_type.bytes().iter().chain(data.iter()).copied().collect::<Vec<_>>();
         let crc = Crc::<u32>::new(&CRC_32_ISO_HDLC).checksum(&preceding);
@@ -85,27 +86,27 @@ impl Chunk {
         }
     }
 
-    fn length(&self) -> u32 {
+    pub fn length(&self) -> u32 {
         self.length
     }
 
-    fn chunk_type(&self) -> &ChunkType {
+    pub fn chunk_type(&self) -> &ChunkType {
         &self.chunk_type
     }
 
-    fn data(&self) -> &[u8] {
+    pub fn data(&self) -> &[u8] {
         &self.data
     }
 
-    fn crc(&self) -> u32 {
+    pub fn crc(&self) -> u32 {
         self.crc
     }
 
-    fn data_as_string(&self) -> Result<String, Error> {
+    pub fn data_as_string(&self) -> Result<String, Error> {
         Ok(std::str::from_utf8(&self.data).unwrap().to_string())
     }
 
-    fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         self.length
             .to_be_bytes()
             .iter()
